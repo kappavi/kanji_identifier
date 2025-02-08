@@ -8,6 +8,7 @@ Setup: imports and loading cache/config.
 # first wani kani api. get teh level of a given kanji
 import json
 import requests 
+import re
 
 # load tokens
 with open('tokens.json', 'r') as file:
@@ -53,7 +54,8 @@ multiple API calls.
 def getKanjiInfo(kanji: list[str]) -> dict:
     ids = []
     for k in kanji:
-        ids.append(kanji_id_cache[k])
+        if k in kanji_id_cache: # some n1 kanji that arent in wanikani. TODO to deal with this
+            ids.append(kanji_id_cache[k])
     ids = ",".join(str(k) for k in ids)
     mapping = {}
     url = f"https://api.wanikani.com/v2/subjects"
@@ -80,13 +82,35 @@ def getKanjiInfo(kanji: list[str]) -> dict:
             
     return mapping
 
-# testing 
+"""
+Helper function to print Kanji from a returned mapping.
+"""
+def printKanji(mapping):
+    for kanji in mapping:
+        level = mapping[kanji]["level"]
+        on = mapping[kanji]["on"]
+        kun = mapping[kanji]["kun"]
+        print(f"The kanji {kanji} is WaniKani level {level}")
+        print(f"The kanji {kanji} has onyomi readings {on} and kunyomi readings {kun}")
+
+"""
+Outputs a list of Kanji based on a text input.
+"""
+def findKanjiFromString(text) -> list[str]:
+    return re.findall(r'[\u4e00-\u9fff]', text)
+
+"""
+Testing here. -----------------------
+"""
 kanji = "食 家 上 下 飲 兄 服 深 探 何 芋 日"
 kanji = kanji.split()
 mapping = getKanjiInfo(kanji)
-for kanji in mapping:
-    level = mapping[kanji]["level"]
-    on = mapping[kanji]["on"]
-    kun = mapping[kanji]["kun"]
-    print(f"The kanji {kanji} is WaniKani level {level}")
-    print(f"The kanji {kanji} has onyomi readings {on} and kunyomi readings {kun}")
+# printKanji(mapping)
+
+# testing parsing 
+text = """
+        今日は。私の名前は田中です。よろしくお願いします。
+        """
+kanji = findKanjiFromString(text)# returns all kanji in a string text, since they are in between unicode values
+# print(kanji)
+printKanji(getKanjiInfo(kanji))
