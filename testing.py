@@ -90,8 +90,9 @@ def printKanji(mapping):
         level = mapping[kanji]["level"]
         on = mapping[kanji]["on"]
         kun = mapping[kanji]["kun"]
-        print(f"The kanji {kanji} is WaniKani level {level}")
-        print(f"The kanji {kanji} has onyomi readings {on} and kunyomi readings {kun}")
+        print(f"The kanji {kanji} is: \n\t WaniKani level {level} \
+              \n\t and has onyomi readings {on} \
+              \n\t and kunyomi readings {kun}")
 
 """
 Outputs a list of Kanji based on a text input.
