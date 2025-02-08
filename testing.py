@@ -1,6 +1,10 @@
 # some initial testing of japanese libraries and whatnot
 # copilot disabled
 
+
+"""
+Setup: imports and loading cache/config.
+"""
 # first wani kani api. get teh level of a given kanji
 import json
 import requests 
@@ -11,49 +15,53 @@ with open('tokens.json', 'r') as file:
 
 wanikani_api_token = tokens["wanikani_api_token"]
 
-"""
-This code initializes the kanji to id lookup mapping. This is relatively permanent 
-so it doesn't need to be refreshed that often.
-
-"""
-# def initialize_kanji_cache(): 
-#     kanji_id_cache = {}
-#     url = f"https://api.wanikani.com/v2/subjects"
-#     params = {"types": "kanji"}
-#     headers = {"Authorization": "Bearer " + wanikani_api_token} 
-#     while url:
-#         response = requests.get(url, params=params, headers=headers)
-#         if response.status_code != 200:
-#             print(f"Error: {response.status_code} - {response.text}")
-#             return
-#         data = response.json()
-#         for item in response.json()["data"]:
-#             kanji_data = item["data"]
-#             kanji_id_cache[kanji_data["characters"]] = item["id"]
-
-#         url = data["pages"]["next_url"]
-    
-#     return kanji_id_cache
-# kanji_id_cache = initialize_kanji_cache()
-# cache_path = "kanji_id_cache.json"
-# with open(cache_path, "w") as json_file:
-#     json.dump(kanji_id_cache, json_file, indent=4)
 
 with open('kanji_id_cache.json', 'r') as file:
     kanji_id_cache = json.load(file)
 
-def getKanjiLevel(kanji):
+"""
+This code initializes the kanji to id lookup mapping. This is relatively permanent 
+so it doesn't need to be refreshed that often.
+"""
+def initialize_kanji_cache(): 
+    kanji_id_cache = {}
+    url = f"https://api.wanikani.com/v2/subjects"
+    params = {"types": "kanji"}
+    headers = {"Authorization": "Bearer " + wanikani_api_token} 
+    while url:
+        response = requests.get(url, params=params, headers=headers)
+        if response.status_code != 200:
+            print(f"Error: {response.status_code} - {response.text}")
+            return
+        data = response.json()
+        for item in response.json()["data"]:
+            kanji_data = item["data"]
+            kanji_id_cache[kanji_data["characters"]] = item["id"]
+
+        url = data["pages"]["next_url"]
+    
+    return kanji_id_cache
+# kanji_id_cache = initialize_kanji_cache()
+# cache_path = "kanji_id_cache.json"
+# with open(cache_path, "w") as json_file:
+#     json.dump(kanji_id_cache, json_file, indent=4)
+"""
+This code takes a list of Kanji and returns a dictionary of their levels, onyomi readings, and kunyomi readings.
+Everything is done in one API call since all data is technically grouped. Would be redundant to make
+multiple API calls.
+"""
+def getKanjiInfo(kanji: list[str]) -> dict:
     ids = []
     for k in kanji:
         ids.append(kanji_id_cache[k])
     ids = ",".join(str(k) for k in ids)
-    ret = {}
+    mapping = {}
     url = f"https://api.wanikani.com/v2/subjects"
     params = {"ids": ids}
     headers = {"Authorization": "Bearer " + wanikani_api_token} 
     response = requests.get(url, params=params, headers=headers)
     if response.status_code != 200:
-        print("Error! Something happened")
+        print(f"Error: {response.status_code} - {response.text}")
     else:
         json = response.json()
         all_data = json["data"] # should be all data for all characters
@@ -61,13 +69,24 @@ def getKanjiLevel(kanji):
             data = item["data"]
             character = data["characters"]
             level = data["level"]
-            ret[character] = level # store mapping because return order is inconsistent 
-    return ret
+            mapping[character] = {"level": level} # store mapping because return order is inconsistent 
+            mapping[character]["on"] = []
+            mapping[character]["kun"] = []
+            for r in data["readings"]:
+                if r["type"] == "onyomi":
+                    mapping[character]["on"].append(r["reading"])
+                else:
+                    mapping[character]["kun"].append(r["reading"])
+            
+    return mapping
 
-# kanji = [1, 2, 3, 4, 5]
-
-kanji = "食 家 上 下 飲 兄 服 深 探 何 芋"
+# testing 
+kanji = "食 家 上 下 飲 兄 服 深 探 何 芋 日"
 kanji = kanji.split()
-kanji_levels = getKanjiLevel(kanji)
-for kanji, level in kanji_levels.items():
+mapping = getKanjiInfo(kanji)
+for kanji in mapping:
+    level = mapping[kanji]["level"]
+    on = mapping[kanji]["on"]
+    kun = mapping[kanji]["kun"]
     print(f"The kanji {kanji} is WaniKani level {level}")
+    print(f"The kanji {kanji} has onyomi readings {on} and kunyomi readings {kun}")
