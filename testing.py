@@ -46,7 +46,8 @@ def getKanjiLevel(kanji):
     ids = []
     for k in kanji:
         ids.append(kanji_id_cache[k])
-    ret = []
+    ids = ",".join(str(k) for k in ids)
+    ret = {}
     url = f"https://api.wanikani.com/v2/subjects"
     params = {"ids": ids}
     headers = {"Authorization": "Bearer " + wanikani_api_token} 
@@ -55,21 +56,18 @@ def getKanjiLevel(kanji):
         print("Error! Something happened")
     else:
         json = response.json()
-        count = json["total_count"]
         all_data = json["data"] # should be all data for all characters
-        for i in range(count):
-            data = all_data[i]["data"]
+        for item in all_data: # now get data for each kanji
+            data = item["data"]
             character = data["characters"]
             level = data["level"]
-            ret.append(level)
+            ret[character] = level # store mapping because return order is inconsistent 
     return ret
 
 # kanji = [1, 2, 3, 4, 5]
 
-kanji = "食 家 上 下 飲"
+kanji = "食 家 上 下 飲 兄 服 深 探 何 芋"
 kanji = kanji.split()
-print(kanji)
 kanji_levels = getKanjiLevel(kanji)
-print(kanji_levels)
-for kanji, level in zip(kanji, kanji_levels):
+for kanji, level in kanji_levels.items():
     print(f"The kanji {kanji} is WaniKani level {level}")
