@@ -72,6 +72,9 @@ def getKanjiInfo(kanji: list[str]) -> dict:
             character = data["characters"]
             level = data["level"]
             mapping[character] = {"level": level} # store mapping because return order is inconsistent 
+            mapping[character]["meaning"] = []
+            for m in data["meanings"]:
+                mapping[character]["meaning"].append(m["meaning"])
             mapping[character]["on"] = []
             mapping[character]["kun"] = []
             for r in data["readings"]:
@@ -88,10 +91,13 @@ Helper function to print Kanji from a returned mapping.
 def printKanji(mapping):
     for kanji in mapping:
         level = mapping[kanji]["level"]
+        meaning = mapping[kanji]["meaning"]
         on = mapping[kanji]["on"]
         kun = mapping[kanji]["kun"]
-        print(f"The kanji {kanji} is WaniKani level {level}")
-        print(f"The kanji {kanji} has onyomi readings {on} and kunyomi readings {kun}")
+        print(f"The kanji {kanji} is: \n\t WaniKani level {level} \
+              \n\t has meaning {meaning} \
+              \n\t and has onyomi readings {on} \
+              \n\t and kunyomi readings {kun}")
 
 """
 Outputs a list of Kanji based on a text input.
@@ -111,6 +117,6 @@ mapping = getKanjiInfo(kanji)
 text = """
         今日は。私の名前は田中です。よろしくお願いします。
         """
-kanji = findKanjiFromString(text)# returns all kanji in a string text, since they are in between unicode values
+kanji = findKanjiFromString(text)# returns all kanji in a string list, since they are in between unicode values
 # print(kanji)
 printKanji(getKanjiInfo(kanji))
