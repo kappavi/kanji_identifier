@@ -1,8 +1,9 @@
 from flask import Flask, jsonify, request
+from flask_cors import CORS
 import testing as backend
 
 app = Flask(__name__)
-
+CORS(app)
 @app.route("/kanji-info", methods=["GET"])
 def get_kanji_info():
     text = request.args.get("text")
