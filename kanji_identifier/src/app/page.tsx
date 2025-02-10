@@ -3,7 +3,6 @@ import Link from "next/link";
 import { useState } from "react";
 import { set } from "zod";
 
-
 export default function HomePage() {
   const [text, setText] = useState<string>("");
   const [kanjiOutput, setKanjiOutput] = useState(null);
@@ -22,6 +21,7 @@ export default function HomePage() {
       }
       const data = await response.json();
       setKanjiOutput(data);
+      console.log("Data", data);
     } catch (error) {
       setError("Something went wrong");
       console.error(error);
@@ -36,7 +36,7 @@ export default function HomePage() {
       const meaning = output[kanji]?.meaning.join(", ");
       const on = output[kanji]?.on.join(", ");
       const kun = output[kanji]?.kun.join(", ");
-      returnString += `${kanji} (Level: ${level}) Meanings: ${meaning} - On: ${on}, Kun: ${kun}\n`;
+      returnString += `${kanji} | Level: ${level} | Meanings: ${meaning} | On: ${on}, Kun: ${kun}\n`;
     }
     return returnString;
     // return JSON.stringify(output, null, 2);
@@ -49,20 +49,20 @@ export default function HomePage() {
         </h1>
         <div className="w-full md:w-3/5 lg:w-2/5 mt-8 flex flex-col items-center">
           <textarea
-            className="w-full p-2 border border-black-200 rounded-md text-black"
+            className="w-full font-sans p-2 border border-black-200 rounded-md text-black"
             placeholder="Enter a Kanji"
             rows={4}
             style={{ resize: "none", overflowWrap: "break-word" }}
             onChange = {(e) => setText(e.target.value)}
           />
-          <button className="mt-4 bg-blue-500 text-white px-4 py-2 rounded-md" onClick={handleSearch}>
+          <button className="mt-4 font-sans bg-blue-500 text-white px-4 py-2 rounded-md" onClick={handleSearch}>
             Search
           </button>
         </div>
-      {kanjiOutput && (
+      {kanjiOutput && formatOutput(kanjiOutput) && (
         <div className="mt-8 w-full md:w-3/5 lg:w-2/5 bg-white p-4 rounded-md text-black">
-            <h2 className="text-2xl font-bold mb-4 text-center">Kanji Information</h2>
-          <pre>{formatOutput(kanjiOutput)}</pre>
+            <h2 className="text-2xl font-sans mb-4 text-center">Kanji Information</h2>
+          <pre className="font-sans">{formatOutput(kanjiOutput)}</pre>
         </div>
       )}
       {error && (

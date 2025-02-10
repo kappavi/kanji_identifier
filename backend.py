@@ -1,7 +1,4 @@
-# some initial testing of japanese libraries and whatnot
-# copilot disabled
-
-
+# this file contains the backend APIs that the server.py uses
 """
 Setup: imports and loading cache/config.
 """
@@ -108,15 +105,21 @@ def findKanjiFromString(text) -> list[str]:
 """
 Testing here. -----------------------
 """
+"""
+
+
 kanji = "食 家 上 下 飲 兄 服 深 探 何 芋 日"
 kanji = kanji.split()
 mapping = getKanjiInfo(kanji)
 # printKanji(mapping)
 
 # testing parsing 
-text = """
+text = \"""
         今日は。私の名前は田中です。よろしくお願いします。
-        """
+        \"""
 kanji = findKanjiFromString(text)# returns all kanji in a string list, since they are in between unicode values
 # print(kanji)
 printKanji(getKanjiInfo(kanji))
+
+
+"""

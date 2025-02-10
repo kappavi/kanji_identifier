@@ -1,6 +1,7 @@
+# server.py that runs the apis on flask and handles the requests.
 from flask import Flask, jsonify, request
 from flask_cors import CORS
-import testing as backend
+import backend as backend
 
 app = Flask(__name__)
 CORS(app)

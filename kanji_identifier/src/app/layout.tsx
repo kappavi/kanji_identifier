@@ -1,7 +1,9 @@
 import "~/styles/globals.css";
 
 import { GeistSans } from "geist/font/sans";
+import { Noto_Sans_JP } from "next/font/google";
 import { type Metadata } from "next";
+
 
 export const metadata: Metadata = {
   title: "Create T3 App",
@@ -9,11 +11,18 @@ export const metadata: Metadata = {
   icons: [{ rel: "icon", url: "/favicon.ico" }],
 };
 
+const notoSansJP = Noto_Sans_JP({
+  weight: ["400", "700"],
+  display: "swap",
+  variable: "--font-noto-sans", // Define CSS variable
+});
+
+
 export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" className={`${GeistSans.variable}`}>
+    <html lang="ja" className={`${notoSansJP.variable}`}>
       <body>{children}</body>
     </html>
   );
