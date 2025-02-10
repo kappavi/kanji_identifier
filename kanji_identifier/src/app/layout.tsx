@@ -1,6 +1,6 @@
 import "~/styles/globals.css";
 
-import { GeistSans } from "geist/font/sans";
+// import { GeistSans } from "geist/font/sans"; // old default
 import { Noto_Sans_JP } from "next/font/google";
 import { type Metadata } from "next";
 
@@ -14,7 +14,7 @@ export const metadata: Metadata = {
 const notoSansJP = Noto_Sans_JP({
   weight: ["400", "700"],
   display: "swap",
-  variable: "--font-noto-sans", // Define CSS variable
+  variable: "--font-noto-sans", // 
 });
 
 
